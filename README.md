@@ -1,283 +1,165 @@
-# Laravel Claude Code Setup 🚀
+# Multi-Project Laravel Claude Code Setup 🚀
 
-**One-command setup** for Claude Code with Laravel development. Automatically configures all MCP servers for the ultimate AI-powered Laravel development experience.
+Setup Claude Code for projects with separate Laravel API and frontend directories.
 
 ## 🎯 What This Does
 
-Installs and configures Claude Code with a complete development ecosystem:
+Configures Claude Code for projects structured like:
+```
+your-project/
+├── api/        # Laravel backend
+└── webapp/     # Vue/React frontend
+```
 
-### 🌐 Global MCP Servers (shared across all projects)
-- ✅ **GitHub integration** - Access all your repositories, manage PRs (with automatic token configuration!)
-- ✅ **Memory system** - Remember decisions across all projects
-- ✅ **Context7** - Latest Laravel/PHP documentation access
-- ✅ **Web fetch** - Access external APIs and resources
-
-### 📁 Project-Specific MCP Servers
-- ✅ **Filesystem access** - Read/write your specific Laravel project files
-- ✅ **Database integration** - Direct access to your project's database
-
-### 🎯 Automated Quality Control (NEW!)
-- ✅ **Auto-linting** - Runs `composer refactor` and `composer lint` after file edits
-- ✅ **Auto-testing** - Runs `composer test` to ensure changes don't break tests
-- ✅ **Local hooks** - Project-specific hooks in `.claude/hooks/`
-- ✅ **Zero-config** - Works out of the box with standard Laravel projects
-
-The installer intelligently sets up global servers once and adds project-specific servers for each Laravel project.
+The multi-project setup provides:
+- ✅ **Unified workspace** - Work on both API and frontend from project root
+- ✅ **Smart hooks** - Linting/testing runs based on which files you edit
+- ✅ **Full-stack commands** - Shortcuts for common full-stack tasks
+- ✅ **Integrated workflow** - API-first development patterns
 
 ## 🚀 Quick Install
 
-### Option 1: Direct Installation (Recommended)
-
-Run this single command from your Laravel project root:
+From your project root (parent of `api/` and `webapp/`):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/install-multi.sh | bash
 ```
 
-### Option 2: With Tokens Pre-configured
+The installer will:
+1. Detect your Laravel and frontend directories
+2. Configure MCP servers for the entire project
+3. Create hooks that understand both codebases
+4. Set up commands for full-stack development
 
-If you want to skip the interactive prompts:
+## 📁 Supported Structures
 
+The installer looks for these common patterns:
+
+### Laravel API directories:
+- `api/`
+- `backend/`
+- `laravel-api/`
+- `server/`
+
+### Frontend directories:
+- `webapp/`
+- `frontend/`
+- `client/`
+- `vue-app/`
+- `web/`
+- `app/`
+
+## 🔧 How It Works
+
+### Smart Hook Detection
+Hooks automatically detect which part of the project you're editing:
+- Edit a file in `api/` → Runs Laravel linting/tests
+- Edit a file in `webapp/` → Runs frontend linting/tests
+- No file context → Runs both
+
+### Unified Commands
+Work from the project root:
 ```bash
-export GITHUB_TOKEN="your_github_personal_access_token"
-curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/install.sh | bash
+# Start Claude Code from project root
+claude
+
+# Both codebases are accessible
+# Commands like /check run on both
 ```
 
-### Option 3: Download and Run
-
-For more control or if you prefer to review the script first:
-
-```bash
-# Download the script
-curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/install.sh -o setup.sh
-
-# Make it executable
-chmod +x setup.sh
-
-# Run it
-./setup.sh
-```
+### Project-Aware CLAUDE.md
+The generated CLAUDE.md understands your structure:
+- Provides commands for both environments
+- Suggests full-stack workflows
+- Maintains quality standards for both
 
 ## 📋 Prerequisites
 
-Before running the installer, make sure you have:
+Same as regular setup plus:
+- Your project must have the multi-directory structure
+- Frontend directory must have `package.json`
+- Laravel directory must have `artisan` and `.env`
 
-1. **Claude Code** installed ([Download here](https://claude.ai/code))
-2. **Node.js & npm** installed
-3. **Go 1.22+** installed (for database MCP server)
-4. **A Laravel project** with `.env` file configured
-5. **GitHub Personal Access Token** (the installer will guide you)
+## 🎮 Usage
 
-## 🔑 Token Setup
-
-### GitHub Token Setup
-
-You'll need a GitHub Personal Access Token for private repository access:
-
-1. Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
-2. Click "Generate new token (classic)"
-3. Select these scopes:
-   - ✅ `repo` (Full control of private repositories)
-   - ✅ `read:user` (Read user profile data)
-   - ✅ `user:email` (Access user email addresses)
-4. Copy the generated token when prompted by the installer
-
-## 🎮 Usage After Installation
-
-Once installed, just open Claude Code in your Laravel project:
-
+After installation:
 ```bash
-cd /path/to/your/laravel/project
+# From project root
 claude
 ```
 
-### 🎯 Automated Quality Control
+Then use commands like:
+- `/check` - Runs all quality checks for both projects
+- `/next` - Suggests next full-stack development steps
 
-The installer sets up hooks that automatically run after you edit files:
-- **Linting**: Runs `composer refactor` and `composer lint`
-- **Testing**: Runs `composer test`
+### Example Workflow
+```
+You: "Add a products API endpoint with frontend list view"
 
-For this to work properly, ensure your `composer.json` has these scripts:
-```json
-{
-  "scripts": {
-    "refactor": "vendor/bin/rector && vendor/bin/pint",
-    "lint": "vendor/bin/phpstan analyse",
-    "test": "vendor/bin/pest --parallel"
-  }
-}
+Claude will:
+1. Create Laravel model, migration, controller, resource
+2. Add API routes and write Pest tests
+3. Create TypeScript types matching API
+4. Build Vue components with proper error handling
+5. Test the complete integration
 ```
 
-Then test everything works:
+## 🛠️ What Gets Created
 
-### 📊 Database & Project Analysis
-- "Show me the database structure"
-- "What Laravel version is this project using?"
-- "Read my .env file and suggest optimizations"
+```
+your-project/
+├── .claude/
+│   ├── CLAUDE.md           # Multi-project instructions
+│   ├── hooks/
+│   │   ├── lint.sh        # Smart linting for both
+│   │   └── test.sh        # Smart testing for both
+│   ├── commands/
+│   │   ├── check.md       # Full-stack checks
+│   │   └── next.md        # Development guidance
+│   └── settings.local.json # Hook configuration
+├── api/                    # Your Laravel code
+└── webapp/                 # Your frontend code
+```
 
-### 🐙 GitHub Integration
-- "List recent commits from my private GitHub repo"
-- "Show me open pull requests"
-- "What's the current branch status?"
+## 🔧 Customization
 
-### 🧠 Memory & Learning
-- "Remember that we use Filament for admin panels"
-- "What coding standards do we follow in this project?"
-- "What decisions have we made about the authentication system?"
-
-### 🔧 Development Shortcuts
+### Different Directory Names
+If your directories have different names, specify them:
 ```bash
-# Load helpful aliases
-source .claude/shortcuts.sh
-
-# Quick commands
-pa migrate              # php artisan migrate
-make-livewire Button   # php artisan make:livewire Button
-serve                  # php artisan serve
+# Download and run with custom paths
+curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/scripts/setup-claude-code-multi.sh -o setup.sh
+chmod +x setup.sh
+./setup.sh backend frontend
 ```
 
-## 🛠️ What Gets Installed
-
-The script intelligently manages global vs project-specific resources:
-
-### Global MCP Servers (installed once, shared by all projects)
-1. **GitHub MCP Server** - Repository access across all projects
-2. **Memory MCP Server** - Shared knowledge base
-3. **Context7** - Documentation access
-4. **Web Fetch** - External API access
-
-### Project-Specific MCP Servers (per Laravel project)
-1. **Filesystem MCP Server** - Access to your project files
-2. **Database MCP Server** - Connected to your project's database
-
-### Project Files (created in `.claude/`)
-- **instructions.md** - AI-optimized development instructions with Figma usage guide
-- **project_context.md** - Project-specific context and tech stack
-- **coding_standards.md** - Laravel/Livewire/Filament best practices
-- **memory_prompts.md** - Memory initialization for AI learning
-- **shortcuts.sh** - Development aliases and shortcuts
-- **README.md** - Setup documentation
-- **hooks/** - Automated quality control scripts
-  - **lint.sh** - Runs Laravel linting and formatting
-  - **test.sh** - Runs your test suite
-- **settings.local.json** - Claude Code hook configuration
-
-### MCP Server Binaries & Dependencies
-- **Context7** - Built from source with npm
-- **Database MCP** - Built from Go source
-- **Web Fetch** - Built from TypeScript source
-- **All other servers** - Installed via npm globally
-
-The installer automatically configures everything based on your Laravel `.env` file.
-
-## 🔧 Advanced Configuration
-
-### Multiple Projects
-The installer can be run in multiple Laravel projects. Global MCP servers are shared, while project-specific servers are unique to each project.
-
-### Custom Database Connections
-Supports MySQL, PostgreSQL, and SQLite. The installer automatically detects your database configuration from `.env`.
-
-### Team Collaboration
-All team members can use the same setup. Share your `.claude/` folder (except sensitive tokens) for consistent AI assistance across the team.
+### Adding More Directories
+Edit `.claude/hooks/lint.sh` and `.claude/hooks/test.sh` to add more directories to check.
 
 ## 🐛 Troubleshooting
 
-### Interactive Mode Not Working?
+### Directory Not Found
+The installer checks for:
+- Laravel: `artisan` and `composer.json` files
+- Frontend: `package.json` file
 
-If you're running via `curl | bash` and the interactive prompts aren't working:
+Make sure these exist in your directories.
 
+### Hooks Not Running
+Ensure you're running Claude Code from the project root, not from subdirectories.
+
+### Wrong Directory Detected
+Specify directories manually:
 ```bash
-# Download and run directly for interactive mode
-curl -fsSL https://raw.githubusercontent.com/advalis/laravel-claude-code-setup/main/install.sh -o setup.sh
-chmod +x setup.sh
-./setup.sh
+./setup.sh my-api-dir my-frontend-dir
 ```
-
-### GitHub Private Repository Access Issues?
-
-The installer should configure this automatically. If you still can't access private repos:
-
-1. Check if your token is configured:
-```bash
-claude mcp list
-```
-
-2. Manually update the token in your Claude config:
-```bash
-# Edit the config file
-nano ~/.claude.json
-
-# Add your token to the GitHub MCP server configuration
-```
-
-### Database Connection Failed?
-
-Make sure your Laravel `.env` file has valid database credentials before running the installer.
-
-### Missing Dependencies?
-
-The installer will tell you what's missing, but you can check manually:
-```bash
-# Check Claude Code
-claude --version
-
-# Check Node.js
-node --version
-
-# Check Go
-go version
-
-# Check npm
-npm --version
-```
-
-## 🆕 What's in v1.0
-
-### 🔧 Enhanced User Experience
-- **Improved interactive detection** - Works correctly with `curl | bash`
-- **Better token management** - Proper prompts for token updates
-- **Graceful error handling** - Continues installation even if some components fail
-- **Smart fallbacks** - Multiple installation methods for reliability
-
-### 🧠 AI-Optimized Instructions
-- **Figma usage guide** - Detailed instructions for design integration
-- **Error handling documentation** - Clear guidance for common issues
-- **Laravel-specific workflows** - Optimized for Laravel + Livewire + Filament + Tailwind
-
-### 🛠️ Technical Improvements
-- **Robust configuration management** - Better handling of existing setups
-- **Cross-platform compatibility** - Enhanced support for different environments
-- **Performance optimizations** - Faster installation and startup times
-
-## 🔗 Links & Resources
-
-- **Repository**: [github.com/advalis/laravel-claude-code-setup](https://github.com/advalis/laravel-claude-code-setup)
-- **Claude Code**: [claude.ai/code](https://claude.ai/code)
-- **Laravel Documentation**: [laravel.com/docs](https://laravel.com/docs)
 
 ## 🤝 Contributing
 
-Found a bug or want to add a feature? PRs are welcome!
-
+To improve multi-project support:
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Test with your project structure
+3. Submit PR with improvements
 
 ## 📝 License
 
-MIT License - feel free to use this in your projects!
-
-## 🙏 Acknowledgments
-
-- **Claude Code team** for the amazing AI development platform
-- **Laravel community** for the incredible framework and ecosystem
-- **MCP Server developers** for the various integration tools
-
----
-
-Made with ❤️ for the Laravel community by [@laraben](https://github.com/laraben)
-
-**Transform your Laravel development with AI-powered assistance! 🚀**
+MIT License - same as the main project
