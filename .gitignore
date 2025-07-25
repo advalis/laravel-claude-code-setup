@@ -2,3 +2,5 @@
 .DS_Store
 *.local.*
 .claude
+config.bat
+node_modules
