@@ -1,0 +1,306 @@
+# Multi-Project Development Partnership
+
+<partnership>
+We're building a full-stack application with Laravel API and Vue frontend. Your role is to create maintainable, efficient solutions while following best practices for both ecosystems.
+
+When you seem stuck or overly complex, I'll redirect you - my guidance helps you stay on track.
+</partnership>
+
+<automated-checks priority="critical">
+## 🚨 AUTOMATED CHECKS ARE MANDATORY
+**ALL hook issues are BLOCKING - EVERYTHING must be ✅ GREEN!**
+No errors. No formatting issues. No linting problems. Zero tolerance.
+These are not suggestions. Fix ALL issues before continuing.
+</automated-checks>
+
+<critical-workflow>
+## CRITICAL WORKFLOW - ALWAYS FOLLOW THIS!
+
+### Research → Plan → Implement
+**NEVER JUMP STRAIGHT TO CODING!** Always follow this sequence:
+1. **Research**: Explore both codebases, understand existing patterns
+2. **Plan**: Create a detailed implementation plan for both API and frontend
+3. **Implement**: Execute the plan with validation checkpoints
+
+When implementing full-stack features:
+1. Design the API contract first
+2. Implement and test the API
+3. Create frontend types matching API responses
+4. Implement frontend with proper error handling
+5. Test the complete flow
+
+### USE MULTIPLE AGENTS!
+For full-stack features, spawn agents for parallel work:
+- One agent for API implementation
+- Another for frontend development
+- Separate agent for writing tests
+- Use agents to explore different parts of both codebases
+
+### Reality Checkpoints
+**Stop and validate** at these moments:
+- After implementing API endpoints
+- After frontend integration
+- Before declaring "done"
+- **WHEN HOOKS FAIL WITH ERRORS** ❌
+
+For Laravel: `cd {{LARAVEL_DIR}} && composer refactor:rector && composer refactor:lint && composer test:pest`
+For Frontend: `cd {{FRONTEND_DIR}} && npm run lint && npm run test`
+</critical-workflow>
+
+<project-structure>
+## Project Structure
+
+```
+{{PROJECT_NAME}}/
+├── {{LARAVEL_DIR}}/          # Laravel API
+│   ├── app/
+│   │   ├── Http/
+│   │   │   ├── Controllers/  # API controllers
+│   │   │   └── Resources/    # API resources
+│   │   ├── Models/          # Eloquent models
+│   │   └── Services/        # Business logic
+│   ├── routes/
+│   │   └── api.php         # API routes
+│   ├── database/           # Migrations & seeders
+│   └── tests/              # Pest tests
+└── {{FRONTEND_DIR}}/        # Vue Frontend
+    ├── src/
+    │   ├── components/     # Vue components
+    │   ├── composables/    # Reusable logic
+    │   ├── pages/         # Page components
+    │   ├── stores/        # Pinia stores
+    │   └── services/      # API clients
+    └── tests/             # Frontend tests
+```
+</project-structure>
+
+<api-development>
+## Laravel API Standards
+
+### API Design
+- RESTful endpoints in `routes/api.php`
+- Consistent naming: `/api/v1/resources`
+- Use API Resources for responses
+- Proper HTTP status codes
+- Validation with Form Requests
+
+### Example API Endpoint
+```php
+// routes/api.php
+Route::apiResource('products', ProductController::class);
+
+// app/Http/Controllers/ProductController.php
+public function index(): JsonResponse
+{
+    $products = Product::with('category')->paginate();
+    return ProductResource::collection($products);
+}
+
+// app/Http/Resources/ProductResource.php
+public function toArray($request): array
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'price' => $this->price,
+        'category' => new CategoryResource($this->whenLoaded('category')),
+    ];
+}
+```
+
+### API Testing
+```php
+// tests/Feature/ProductApiTest.php
+it('lists products with pagination', function () {
+    Product::factory()->count(25)->create();
+    
+    $response = $this->getJson('/api/v1/products');
+    
+    $response->assertOk()
+        ->assertJsonStructure([
+            'data' => ['*' => ['id', 'name', 'price']],
+            'meta' => ['current_page', 'total'],
+        ]);
+});
+```
+</api-development>
+
+<frontend-development>
+## Vue Frontend Standards
+
+### Component Structure
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useProductsApi } from '@/composables/useProductsApi'
+import type { Product } from '@/types'
+
+const { products, loading, error, fetchProducts } = useProductsApi()
+
+onMounted(() => {
+  fetchProducts()
+})
+</script>
+
+<template>
+  <div>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="error" class="text-red-500">{{ error }}</div>
+    <ProductList v-else :products="products" />
+  </div>
+</template>
+```
+
+### API Integration
+```typescript
+// composables/useProductsApi.ts
+export function useProductsApi() {
+  const products = ref<Product[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
+  const fetchProducts = async () => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await api.get<ApiResponse<Product[]>>('/products')
+      products.value = response.data.data
+    } catch (err) {
+      error.value = 'Failed to load products'
+      console.error(err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    products: readonly(products),
+    loading: readonly(loading),
+    error: readonly(error),
+    fetchProducts,
+  }
+}
+```
+
+### TypeScript Types
+```typescript
+// types/index.ts
+export interface Product {
+  id: number
+  name: string
+  price: number
+  category?: Category
+}
+
+export interface ApiResponse<T> {
+  data: T
+  meta?: {
+    current_page: number
+    total: number
+  }
+}
+```
+</frontend-development>
+
+<integration-patterns>
+## Full-Stack Integration Patterns
+
+### Authentication Flow
+1. Laravel: Sanctum API tokens
+2. Frontend: Axios interceptors for token management
+3. Pinia store for auth state
+4. Route guards for protected pages
+
+### File Uploads
+1. Laravel: Handle multipart/form-data
+2. Validate file types and sizes
+3. Store in appropriate disk
+4. Return file URL in response
+5. Frontend: Show upload progress
+
+### Real-time Updates
+1. Laravel: Broadcast events via Reverb
+2. Frontend: Laravel Echo for listening
+3. Update UI reactively
+4. Handle connection failures gracefully
+</integration-patterns>
+
+<quality-standards>
+## Quality Standards
+
+### Laravel Must-Haves
+- ✅ Type declarations on all methods
+- ✅ API Resources for all responses
+- ✅ Validation for all inputs
+- ✅ Pest tests for all endpoints
+- ✅ Proper error responses
+- ✅ Database transactions where needed
+
+### Vue Must-Haves
+- ✅ TypeScript for type safety
+- ✅ Composition API with `<script setup>`
+- ✅ Error boundaries for failures
+- ✅ Loading states for async operations
+- ✅ Proper form validation
+- ✅ Accessibility attributes
+
+### Never Do
+- ❌ Direct database queries in controllers
+- ❌ Business logic in frontend
+- ❌ Untyped API responses
+- ❌ Console.log in production code
+- ❌ Inline styles or scripts
+- ❌ API calls in components (use composables)
+</quality-standards>
+
+<common-tasks>
+## Common Full-Stack Tasks
+
+### Adding a New Resource
+1. **API**: Create migration, model, controller, resource
+2. **API**: Add routes and write tests
+3. **Frontend**: Create TypeScript types
+4. **Frontend**: Create API composable
+5. **Frontend**: Build UI components
+6. **Frontend**: Add to routing
+7. **Both**: Test complete flow
+
+### API-First Development
+Always start with the API:
+```bash
+# 1. Create API structure
+cd {{LARAVEL_DIR}}
+php artisan make:model Product -mfsc
+php artisan make:resource ProductResource
+
+# 2. Run tests
+composer test:pest
+
+# 3. Then create frontend
+cd ../{{FRONTEND_DIR}}
+# Create types, composables, components
+```
+</common-tasks>
+
+<commands>
+## Essential Commands
+
+### Full-Stack Development
+```bash
+# Start both servers (run in separate terminals)
+cd {{LARAVEL_DIR}} && php artisan serve
+cd {{FRONTEND_DIR}} && npm run dev
+
+# Run all checks
+cd {{LARAVEL_DIR}} && composer refactor:rector && composer refactor:lint && composer test:pest
+cd {{FRONTEND_DIR}} && npm run lint && npm run format && npm run test
+
+# Database operations
+cd {{LARAVEL_DIR}}
+php artisan migrate:fresh --seed  # Reset database
+php artisan tinker                 # Interactive shell
+```
+</commands>
+
+Remember: This is a full-stack feature branch. Both API and frontend must work together seamlessly. No backwards compatibility needed - focus on clean, integrated solutions.
